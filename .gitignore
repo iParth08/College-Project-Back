@@ -1,0 +1,29 @@
+# Node.js
+node_modules/
+
+# TypeScript build files (if you had any TypeScript files previously)
+dist/
+
+# dotenv environment variable files
+.env
+
+# Logs
+*.log
+
+# IDE/Editor specific files
+.vscode/
+.idea/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# npm package-lock files (optional)
+package-lock.json
+
+# Testing coverage directory
+coverage/
+
+# Miscellaneous files
+*.bak
+*.swp
