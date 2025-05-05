@@ -3,6 +3,8 @@ import nodemailer from "nodemailer";
 // Setup email transporter using SMTP (e.g., Gmail, or any SMTP provider)
 const transporter = nodemailer.createTransport({
   service: "gmail", // You can use any email service here
+  secure: true, // Use TLS
+  port: 465, // Port for secure SMTP
   auth: {
     user: process.env.EMAIL_USER, // Email service username
     pass: process.env.EMAIL_PASS, // Email service password
@@ -13,8 +15,8 @@ const transporter = nodemailer.createTransport({
 export const sendOTPEmail = (email, otp) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
-    to: email,
-    subject: "Your OTP Code",
+    to: "shwetprakashcse2021@nsec.ac.in", // Recipient email address
+    subject: "ClubConnect | Your OTP Code",
     text: `Your OTP code is: ${otp}`,
   };
 

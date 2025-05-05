@@ -17,7 +17,7 @@ const BlogSchema = new mongoose.Schema(
       required: true,
     },
 
-    writer: {
+    author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -32,7 +32,7 @@ const BlogSchema = new mongoose.Schema(
     tags: [
       {
         type: String,
-        enum: ["internship", "job", "guide", "article"],
+        enum: ["Internship", "Job", "Guide", "Tech Article", "Story"],
       },
     ],
 
@@ -67,7 +67,7 @@ const BlogSchema = new mongoose.Schema(
       default: 0,
     },
 
-    isFeatured: {
+    isPublished: {
       type: Boolean,
       default: false,
     },

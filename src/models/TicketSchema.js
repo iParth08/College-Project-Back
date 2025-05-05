@@ -1,8 +1,9 @@
 const TicketSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  event: { type: mongoose.Schema.Types.ObjectId, ref: "Event" },
-  ticketToken: { type: String, unique: true },
-  hasPaid: Boolean,
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  event: { type: mongoose.Schema.Types.ObjectId, ref: "Event", required: true },
+  ticketToken: { type: String, unique: true, required: true },
+
+  hasPaid: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
 

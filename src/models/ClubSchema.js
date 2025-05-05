@@ -19,6 +19,7 @@ const ClubSchema = new mongoose.Schema(
             "ambassador",
             "vice-president",
             "president",
+            "treasurer",
           ],
           default: "member",
         },

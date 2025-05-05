@@ -1,5 +1,7 @@
 import express from "express";
 import {
+  login,
+  logout,
   signupStep1,
   verifyOTP,
   verifyUsername,
@@ -15,5 +17,8 @@ router.post("/signup/verify-otp", verifyOTP);
 
 // Step 3: Set Username
 router.post("/signup/verify-username", verifyUsername);
+
+router.post("/login", login);
+router.get("/logout", logout);
 
 export default router;

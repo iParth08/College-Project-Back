@@ -7,13 +7,6 @@ const UserSchema = new mongoose.Schema(
       required: true,
     },
 
-    username: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-    },
-
     email: {
       type: String,
       required: true,
@@ -30,6 +23,47 @@ const UserSchema = new mongoose.Schema(
       default: false,
     },
 
+    username: {
+      type: String,
+      unique: true,
+      lowercase: true,
+    },
+
+    profile: {
+      picture: {
+        type: String,
+        default: "",
+      },
+      bio: {
+        type: String,
+        default: "",
+      },
+      studentId: {
+        type: String,
+        default: "",
+      },
+      interests: {
+        type: [String],
+        default: [],
+      },
+      idcardUrl: {
+        type: String,
+        default: "",
+      },
+      idcardOriginalName: {
+        type: String,
+        default: "",
+      },
+      resumeUrl: {
+        type: String,
+        default: "",
+      },
+      resumeOriginalName: {
+        type: String,
+        default: "",
+      },
+    },
+
     forgotPasswordToken: {
       type: String,
       default: null,
@@ -38,34 +72,29 @@ const UserSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
-    verifyEmailToken: {
+
+    otp: {
       type: String,
       default: null,
     },
-    verifyEmailTokenExpiry: {
+    otpExpires: {
       type: Date,
       default: null,
     },
-
-    profileImage: {
+    jwtToken: {
       type: String,
-      default: "",
-    },
-
-    universityRoll: {
-      type: String,
-      unique: true,
-    },
-
-    studentId: {
-      type: String,
-      unique: true,
+      default: null,
     },
 
     role: {
       type: String,
       enum: ["student", "professor"],
       default: "student",
+    },
+
+    isAdmin: {
+      type: Boolean,
+      default: false,
     },
 
     activityPoints: {
@@ -84,6 +113,7 @@ const UserSchema = new mongoose.Schema(
             "ambassador",
             "vice-president",
             "president",
+            "treasurer",
           ],
           default: "member",
         },
