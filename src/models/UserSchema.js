@@ -102,21 +102,19 @@ const UserSchema = new mongoose.Schema(
       default: 0,
     },
 
+    rank: {
+      type: Number,
+      default: 6,
+    },
+
     clubs: [
       {
         club: { type: mongoose.Schema.Types.ObjectId, ref: "Club" },
         role: {
           type: String,
-          enum: [
-            "member",
-            "core-member",
-            "ambassador",
-            "vice-president",
-            "president",
-            "treasurer",
-          ],
           default: "member",
         },
+        clubPoints: { type: Number },
         joinedAt: { type: Date, default: Date.now },
       },
     ],

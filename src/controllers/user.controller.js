@@ -1,8 +1,8 @@
 import User from "../models/UserSchema.js";
-import cloudinary from "../utils/cloudinary.js";
+import { streamUpload } from "../utils/cloudinary.js";
 
 export const getUserProfile = async (req, res) => {
-  const userId = req.user._id; // Assuming you have auth middleware to set req.user
+  const userId = req.user?.id; // Assuming you have auth middleware to set req.user
   try {
     const user = await User.findById(userId).select(
       "-password -__v -createdAt -updatedAt"
@@ -11,6 +11,30 @@ export const getUserProfile = async (req, res) => {
     res.status(200).json(user);
   } catch (error) {
     console.error("getUserProfile error:", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+//getprofilebyID
+export const fetchUserProfileById = async (req, res) => {
+  const { userId } = req.params; // or req.query.userId depending on your route
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
+  try {
+    const user = await User.findById(userId).select(
+      "name email username isVerified profile"
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("fetchUserProfileById error:", error.message);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -35,54 +59,60 @@ export const deleteAccount = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   const userId = req.user?.id; // Assuming you have auth middleware to set req.user
-  const { bio, studentId, interests } = req.body;
+  const { name, bio, studentId, interests } = req.body;
+  let interestsArray = JSON.parse(interests);
+
+  //get files from multer.
+  const files = req.files;
 
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
     // Update text fields
+    user.name = name || user.name;
     user.profile.bio = bio || user.profile.bio;
     user.profile.studentId = studentId || user.profile.studentId;
-    if (interests) {
-      user.profile.interests = Array.isArray(interests)
-        ? interests
-        : interests.split(",").map((i) => i.trim());
-    }
-    /*
-    // Dummy file handling
-    if (req.files?.picture) {
-      const result = await cloudinary.uploader
-        .upload_stream({ folder: "profiles" }, (error, result) => {
-          if (error) throw new Error("Profile picture upload failed");
-          user.profile.picture = result.secure_url;
-        })
-        .end(req.files.picture[0].buffer);
+    if (interestsArray) {
+      user.profile.interests = Array.isArray(interestsArray)
+        ? interestsArray
+        : interestsArray.split(",").map((i) => i.trim());
     }
 
-    if (req.files?.idcard) {
-      const result = await cloudinary.uploader
-        .upload_stream({ folder: "idcards" }, (error, result) => {
-          if (error) throw new Error("ID card upload failed");
-          user.profile.idcardUrl = result.secure_url;
-          user.profile.idcardOriginalName = req.files.idcard[0].originalname;
-        })
-        .end(req.files.idcard[0].buffer);
-    }
+    //Upload to cloudinary
 
-    if (req.files?.resume) {
-      const result = await cloudinary.uploader
-        .upload_stream(
-          { folder: "resumes", resource_type: "raw" },
-          (error, result) => {
-            if (error) throw new Error("Resume upload failed");
-            user.profile.resumeUrl = result.secure_url;
-            user.profile.resumeOriginalName = req.files.resume[0].originalname;
-          }
-        )
-        .end(req.files.resume[0].buffer);
-    }
-        */
+    const uploadToCloud = async () => {
+      if (files?.picture?.[0]) {
+        const pictureUrl = await streamUpload(
+          files.picture[0].buffer,
+          "profiles/pictures"
+        );
+        // console.log("pic", pictureUrl);
+        user.profile.picture = pictureUrl;
+      }
+
+      if (files?.resume?.[0]) {
+        console.log("got resume");
+        const resumeUrl = await streamUpload(
+          files.resume[0].buffer,
+          "profiles/resumes"
+        );
+        user.profile.resume = resumeUrl;
+        // console.log("pic", resumeUrl);
+        user.profile.resumeOriginalName = `${name}'s Resume`;
+      }
+
+      if (files?.studentIdCard?.[0]) {
+        const idCardUrl = await streamUpload(
+          files.studentIdCard[0].buffer,
+          "profiles/idcards"
+        );
+        user.profile.idcardUrl = idCardUrl;
+        user.profile.idcardOriginalName = `${name}'s IDCard`;
+      }
+    };
+
+    await uploadToCloud();
 
     await user.save();
     res.status(200).json({ message: "Profile updated", user });

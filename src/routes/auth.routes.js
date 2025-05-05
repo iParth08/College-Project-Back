@@ -6,6 +6,7 @@ import {
   verifyOTP,
   verifyUsername,
 } from "../controllers/auth.controller.js";
+import isAutheticated from "../middlewares/isAuthenticated.js";
 
 const router = express.Router();
 
@@ -19,6 +20,6 @@ router.post("/signup/verify-otp", verifyOTP);
 router.post("/signup/verify-username", verifyUsername);
 
 router.post("/login", login);
-router.get("/logout", logout);
+router.get("/logout", isAutheticated, logout);
 
 export default router;
