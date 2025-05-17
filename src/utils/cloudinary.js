@@ -8,17 +8,27 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export const streamUpload = (buffer, folder, resourceType = "auto") => {
+export const streamUpload = (
+  buffer,
+  folder,
+  resourceType = "auto",
+  publicId = null
+) => {
   return new Promise((resolve, reject) => {
+    const options = { folder, resource_type: resourceType };
+    if (publicId) options.public_id = publicId;
+
     const stream = cloudinary.uploader.upload_stream(
-      { folder, resource_type: resourceType },
+      options,
       (error, result) => {
         if (error || !result) {
+          console.error("Cloudinary Upload Error:", error);
           return reject(new Error("Cloudinary upload failed"));
         }
         resolve(result.secure_url);
       }
     );
+
     stream.end(buffer);
   });
 };

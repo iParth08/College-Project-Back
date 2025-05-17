@@ -1,5 +1,18 @@
 import mongoose from "mongoose";
 
+const NotificationSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ["club", "event", "admin", "system", "warning", "verification"],
+    required: true,
+  },
+  message: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  isRead: { type: Boolean, default: false },
+  relatedClub: { type: mongoose.Schema.Types.ObjectId, ref: "Club" },
+  relatedEvent: { type: mongoose.Schema.Types.ObjectId, ref: "Event" },
+});
+
 const UserSchema = new mongoose.Schema(
   {
     name: {
@@ -27,9 +40,15 @@ const UserSchema = new mongoose.Schema(
       type: String,
       unique: true,
       lowercase: true,
+      set: (v) => v.toLowerCase().replace(/\s+/g, ""),
     },
 
     profile: {
+      role: {
+        type: String,
+        enum: ["Professor", "Alumini", "Student"],
+        default: "Student",
+      },
       picture: {
         type: String,
         default: "",
@@ -39,6 +58,14 @@ const UserSchema = new mongoose.Schema(
         default: "",
       },
       studentId: {
+        type: String,
+        default: "",
+      },
+      department: {
+        type: String,
+        default: "",
+      },
+      graduationYear: {
         type: String,
         default: "",
       },
@@ -62,7 +89,21 @@ const UserSchema = new mongoose.Schema(
         type: String,
         default: "",
       },
+      linkedin: {
+        type: String,
+        default: "",
+      },
+      activityPoints: {
+        type: Number,
+        default: 0,
+      },
+      rank: {
+        type: Number,
+        default: 6,
+      },
     },
+
+    notifications: [NotificationSchema],
 
     forgotPasswordToken: {
       type: String,
@@ -81,45 +122,22 @@ const UserSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+
     jwtToken: {
       type: String,
       default: null,
     },
 
-    role: {
-      type: String,
-      enum: ["student", "professor"],
-      default: "student",
+    admin: {
+      isAdmin: { type: Boolean, default: false },
+      role: { type: String, enum: ["Super Admin", "Admin", "Moderator"] },
+      status: { type: Boolean, default: false },
+      lastActive: { type: Date, default: Date.now },
     },
 
-    isAdmin: {
-      type: Boolean,
-      default: false,
-    },
+    clubsMember: [{ type: mongoose.Schema.Types.ObjectId, ref: "Club" }],
 
-    activityPoints: {
-      type: Number,
-      default: 0,
-    },
-
-    rank: {
-      type: Number,
-      default: 6,
-    },
-
-    clubs: [
-      {
-        club: { type: mongoose.Schema.Types.ObjectId, ref: "Club" },
-        role: {
-          type: String,
-          default: "member",
-        },
-        clubPoints: { type: Number },
-        joinedAt: { type: Date, default: Date.now },
-      },
-    ],
-
-    blogs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Blog" }],
+    blogsAuthored: [{ type: mongoose.Schema.Types.ObjectId, ref: "Blog" }],
 
     registeredEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: "Event" }],
 

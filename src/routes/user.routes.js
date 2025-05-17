@@ -1,5 +1,7 @@
 import express from "express";
 import {
+  checkUniqueStudentId,
+  checkUsernameAvailability,
   deleteAccount,
   fetchUserProfileById,
   getAllUsers,
@@ -11,6 +13,8 @@ import upload from "../middlewares/multer.js";
 
 const router = express.Router();
 
+router.get("/check-username", checkUsernameAvailability);
+router.get("/check-studentId", checkUniqueStudentId);
 router.get("/get-all", getAllUsers);
 router.get("/delete-account", isAutheticated, deleteAccount);
 
@@ -18,9 +22,9 @@ router.post(
   "/update-profile",
   isAutheticated,
   upload.fields([
-    { name: "picture", maxCount: 1 },
+    { name: "profileImage", maxCount: 1 },
     { name: "resume", maxCount: 1 },
-    { name: "studentIdCard", maxCount: 1 },
+    { name: "idCard", maxCount: 1 },
   ]),
   updateProfile
 );

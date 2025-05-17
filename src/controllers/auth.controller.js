@@ -28,6 +28,8 @@ export const signupStep1 = async (req, res) => {
     const otp = randomBytes(3).toString("hex"); // Generate a random 6-digit OTP
     const otpExpires = Date.now() + 15 * 60 * 1000; // OTP expires in 15 minutes
 
+    console.log("opt", otp);
+
     // Save the user temporarily with OTP and expiration
     const newUser = new User({
       name,
@@ -96,16 +98,6 @@ export const verifyUsername = async (req, res) => {
     user.username = username;
     await user.save();
 
-    const jwtToken = jwt.sign(
-      {
-        id: user._id,
-        email: user.email,
-        username: user.username,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
-
     res.status(200).json({ message: "Signup complete" });
   } catch (error) {
     console.error("verifyUsername error:", error.message);
@@ -146,7 +138,7 @@ export const login = async (req, res) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: "1d",
+        expiresIn: "3d",
       }
     );
 
@@ -157,7 +149,7 @@ export const login = async (req, res) => {
       username: user.username,
       profilePic: user.profile.picture,
       bio: user.profile.bio,
-      isAdmin: user.isAdmin,
+      isAdmin: user.admin.isAdmin,
     };
 
     // Cookies
@@ -173,6 +165,77 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const adminLogin = async (req, res) => {
+  const { identifier, password } = req.body;
+
+  console.log("Admin Log : ", identifier, password);
+
+  if (!(identifier && password)) {
+    return res.status(400).json({ message: "Credentials required" });
+  }
+
+  try {
+    // Find user either by email or username
+    const user = await User.findOne({
+      $or: [{ email: identifier }, { username: identifier }],
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "No user Found" });
+    }
+
+    if (!user.admin.isAdmin) {
+      return res
+        .status(404)
+        .json({ message: "This account doen't hold ADMIN previledges." });
+    }
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Incorrect Password" });
+    }
+
+    // Generate JWT Token
+    const jwtToken = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+        username: user.username,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1d",
+      }
+    );
+
+    const userData = {
+      id: user._id,
+      email: user.email,
+      name: user.name,
+      username: user.username,
+      profilePic: user.profile.picture,
+      bio: user.profile.bio,
+      isAdmin: user.admin.isAdmin,
+    };
+
+    // Cookies
+    const options = {
+      expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), //3days
+      httpOnly: true,
+      sameSite: "strict",
+    };
+
+    res.status(200).cookie("token", jwtToken, options).json({
+      message: "Login successful",
+      user: userData,
+    });
+  } catch (error) {
+    console.error("error from admin-login", error);
     res.status(500).json({ message: "Server error" });
   }
 };

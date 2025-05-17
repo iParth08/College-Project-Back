@@ -1,12 +1,12 @@
 import express from "express";
 import {
+  adminLogin,
   login,
   logout,
   signupStep1,
   verifyOTP,
   verifyUsername,
 } from "../controllers/auth.controller.js";
-import isAutheticated from "../middlewares/isAuthenticated.js";
 
 const router = express.Router();
 
@@ -19,7 +19,9 @@ router.post("/signup/verify-otp", verifyOTP);
 // Step 3: Set Username
 router.post("/signup/verify-username", verifyUsername);
 
+//user login
 router.post("/login", login);
-router.get("/logout", isAutheticated, logout);
+router.get("/logout", logout);
 
+router.post("/admin-login", adminLogin);
 export default router;

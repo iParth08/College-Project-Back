@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import blogRoutes from "./routes/blog.routes.js";
+import clubRoutes from "./routes/club.routes.js";
 import cookieParser from "cookie-parser";
 dotenv.config();
 const app = express();
@@ -26,6 +27,7 @@ app.get("/api/test", (_, res) => res.send("Test route is working!"));
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/blog", blogRoutes);
+app.use("/api/club", clubRoutes);
 
 // Connect DB and Start Server
 const PORT = process.env.PORT || 5000;
