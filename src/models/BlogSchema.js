@@ -52,6 +52,7 @@ const BlogSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+        default: 0,
       },
     ],
 
@@ -59,6 +60,20 @@ const BlogSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+        default: 0,
+      },
+    ],
+
+    flags: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        message: {
+          type: String,
+          required: true,
+        },
       },
     ],
 

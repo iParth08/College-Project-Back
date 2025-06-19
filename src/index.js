@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import blogRoutes from "./routes/blog.routes.js";
 import clubRoutes from "./routes/club.routes.js";
+import eventRoutes from "./routes/event.routes.js";
 import cookieParser from "cookie-parser";
 dotenv.config();
 const app = express();
@@ -28,6 +29,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/blog", blogRoutes);
 app.use("/api/club", clubRoutes);
+app.use("/api/event", eventRoutes);
 
 // Connect DB and Start Server
 const PORT = process.env.PORT || 5000;

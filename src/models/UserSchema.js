@@ -99,20 +99,11 @@ const UserSchema = new mongoose.Schema(
       },
       rank: {
         type: Number,
-        default: 6,
+        default: null,
       },
     },
 
     notifications: [NotificationSchema],
-
-    forgotPasswordToken: {
-      type: String,
-      default: null,
-    },
-    forgotPasswordTokenExpiry: {
-      type: Date,
-      default: null,
-    },
 
     otp: {
       type: String,

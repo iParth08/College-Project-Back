@@ -3,10 +3,12 @@ import {
   adminLogin,
   login,
   logout,
+  registerAlumini,
   signupStep1,
   verifyOTP,
   verifyUsername,
 } from "../controllers/auth.controller.js";
+import upload from "../middlewares/multer.js";
 
 const router = express.Router();
 
@@ -24,4 +26,9 @@ router.post("/login", login);
 router.get("/logout", logout);
 
 router.post("/admin-login", adminLogin);
+router.post(
+  "/register-alumini",
+  upload.fields([{ name: "resume", maxCount: 1 }]),
+  registerAlumini
+);
 export default router;

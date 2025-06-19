@@ -1,6 +1,7 @@
+import mongoose from "mongoose";
 const EventSchema = new mongoose.Schema(
   {
-    title: String,
+    name: String,
     type: {
       type: String,
       enum: ["event", "workshop", "hackathon", "meetup", "conference"],
@@ -9,11 +10,14 @@ const EventSchema = new mongoose.Schema(
     description: String,
     bannerImage: String,
     date: Date,
+    maxParticipants: {
+      type: Number,
+      default: 100,
+    },
     location: {
-      address: String,
-      coordinates: {
-        lat: Number,
-        lng: Number,
+      venue: String,
+      maplink: {
+        type: String,
       },
     },
     isOnline: { type: Boolean, default: false },
@@ -21,10 +25,11 @@ const EventSchema = new mongoose.Schema(
     registration: {
       isPaid: { type: Boolean, default: false },
       price: { type: Number, default: 0 },
-      maxParticipants: Number,
       deadline: Date,
     },
     participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "Ticket" }],
   },
   { timestamps: true }
 );
+
+export default mongoose.model("Event", EventSchema);

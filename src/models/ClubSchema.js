@@ -24,6 +24,26 @@ const ClubMemberSchema = new mongoose.Schema({
   },
 });
 
+const ClubApplicantSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ["accepted", "pending"],
+      default: "pending",
+    },
+    applyAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: false }
+);
+
 const ClubQuerySchema = new mongoose.Schema(
   {
     askedBy: {
@@ -107,16 +127,7 @@ const ClubSchema = new mongoose.Schema(
       budgetProposal: { type: String, default: "" },
     },
 
-    applicants: [
-      {
-        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        status: {
-          type: String,
-          enum: ["pending", "review", "accepted", "rejected"],
-        },
-        applyAt: { type: Date, default: Date.now },
-      },
-    ],
+    applicants: [ClubApplicantSchema],
 
     members: [ClubMemberSchema],
 
